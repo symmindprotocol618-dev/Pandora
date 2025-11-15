@@ -149,13 +149,26 @@ bash LAUNCH_PANDORA.sh
 
 ### 3. Offline Chatbot System
 
-**No API Required**: Runs completely offline with local LLM
+**Offline-First Design**: Runs completely offline with local LLM, optional cloud enhancement
 
 **Supported Models**:
 - GPT4All (easiest, recommended)
 - llama.cpp (advanced users)
 - Transformers (HuggingFace)
+- **xAI Grok** (optional, requires API key) ⭐ NEW
 - Template fallback (no dependencies)
+
+**xAI Integration** (Optional Enhancement):
+```bash
+# Get API key from: https://x.ai/api
+export XAI_API_KEY="your-api-key-here"
+pip install httpx
+
+# Use in Python
+from xai_api_integration import XAIClient
+client = XAIClient()
+response = client.chat("Explain quantum computing")
+```
 
 **Features**:
 - Multi-turn conversations
@@ -163,6 +176,8 @@ bash LAUNCH_PANDORA.sh
 - System integration (diagnostics, quantum, research)
 - Conversation history
 - Command execution
+- **Cloud AI enhancement** (xAI Grok when available)
+- **Automatic fallback** to local LLM
 
 **Commands**:
 - `/chat` - Interactive chatbot

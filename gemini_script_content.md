@@ -1100,6 +1100,247 @@ fi
 
 ---
 
+## xAI API Integration
+
+**File**: `xai_api_integration.py` (16,526 characters, 570+ lines)
+
+### Overview
+
+Optional integration with xAI's Grok API that maintains Pandora's offline-first philosophy while providing enhanced AI capabilities when internet connectivity is available.
+
+### Philosophy
+
+"Use cloud AI when available, fall back to local when needed" - Pandora remains fully functional offline but can leverage xAI's powerful Grok model when configured.
+
+### Key Features
+
+1. **xAI Grok Model Support**:
+   - Integration with xAI's Grok-beta model
+   - Async API calls with rate limiting
+   - Automatic fallback to local LLM when unavailable
+   - Streaming responses for real-time interaction
+
+2. **Configuration** (`XAIConfig`):
+   ```python
+   api_key: str          # From environment: XAI_API_KEY
+   base_url: str         # https://api.x.ai/v1
+   model: str            # "grok-beta"
+   max_tokens: int       # 4096
+   temperature: float    # 0.7
+   timeout: float        # 60.0 seconds
+   max_retries: int      # 3 attempts
+   stream: bool          # False (set True for streaming)
+   ```
+
+3. **API Client** (`XAIClient`):
+   - Chat completions with context management
+   - Conversation history tracking
+   - Usage and cost monitoring
+   - Retry logic with exponential backoff
+   - Rate limit handling (429 errors)
+   - Graceful error handling
+
+4. **Usage Tracking** (`APIUsage`):
+   - Total requests count
+   - Token usage monitoring
+   - Cost estimation
+   - Time-based statistics
+   - JSON export for analytics
+
+5. **Pandora Integration** (`PandoraXAIIntegration`):
+   - Combines xAI with Pandora Knowledge Base
+   - Enhanced queries with local context
+   - Research queries with paper citations
+   - Multi-source responses (xAI + Pandora KB + Research DB)
+
+### Core Methods
+
+**XAIClient**:
+- `chat(message, system_prompt, context)` - Send chat message, get response
+- `chat_stream(message, system_prompt)` - Stream response in chunks
+- `clear_history()` - Clear conversation history
+- `get_usage()` - Get API usage statistics
+- `close()` - Close HTTP client
+
+**PandoraXAIIntegration**:
+- `enhanced_query(query)` - Query with Pandora context
+- `research_query(query, include_papers)` - Scientific research query
+
+### Setup Instructions
+
+1. **Get xAI API Key**:
+   - Visit: https://x.ai/api
+   - Sign up for xAI platform
+   - Generate API key
+
+2. **Configure Environment**:
+   ```bash
+   export XAI_API_KEY="your-api-key-here"
+   ```
+
+3. **Install Dependencies**:
+   ```bash
+   pip install httpx
+   ```
+
+4. **Use in Code**:
+   ```python
+   from xai_api_integration import XAIClient
+   
+   client = XAIClient()
+   response = client.chat("Explain quantum entanglement")
+   print(response)
+   ```
+
+### Integration with Gemini Script
+
+You can also use xAI API to power Gemini-like interactions:
+
+```python
+from xai_api_integration import PandoraXAIIntegration
+
+# Initialize with Pandora systems
+pandora_xai = PandoraXAIIntegration()
+
+# Enhanced query with Pandora knowledge
+result = pandora_xai.enhanced_query(
+    "How does Pandora AIOS implement quantum overlays?"
+)
+print(result["response"])  # xAI response with Pandora context
+
+# Research query with papers
+research = pandora_xai.research_query(
+    "Latest developments in quantum computing",
+    include_papers=True
+)
+print(research["response"])  # xAI response
+print(research["papers"])    # Relevant papers from arXiv
+```
+
+### Error Handling
+
+- **No API Key**: Falls back to local LLM with warning message
+- **Rate Limits**: Automatic retry with exponential backoff
+- **Network Errors**: Graceful fallback with error logging
+- **Invalid Response**: Returns fallback message
+
+### Offline-First Design
+
+- System fully functional without xAI API
+- Local LLM (GPT4All, Llama, etc.) used as primary fallback
+- xAI treated as "enhancement" not "requirement"
+- All Pandora features work independently
+
+### Cost Tracking
+
+```python
+client = XAIClient()
+
+# Make multiple queries
+for query in queries:
+    response = client.chat(query)
+    print(response)
+
+# Check usage
+usage = client.get_usage()
+print(f"Total requests: {usage['total_requests']}")
+print(f"Total tokens: {usage['total_tokens']}")
+print(f"Total cost: ${usage['total_cost']:.4f}")
+```
+
+### Streaming Example
+
+```python
+client = XAIClient()
+
+print("Response: ", end="", flush=True)
+for chunk in client.chat_stream("Explain the universe"):
+    print(chunk, end="", flush=True)
+print()
+```
+
+### Security Considerations
+
+- API key stored in environment variable (not in code)
+- HTTPS for all API communication
+- Timeout limits prevent hanging requests
+- No sensitive data logged
+- Automatic fallback prevents data leaks
+
+### Dependencies
+
+**Required**:
+- Python 3.7+
+- httpx (for HTTP client)
+
+**Optional** (for full Pandora integration):
+- pandora_knowledge_base.py
+- scientific_research_tracker.py
+- Other Pandora modules
+
+### Advantages over Direct API Use
+
+1. **Automatic Fallback**: Never breaks, always works
+2. **Context Enhancement**: Adds Pandora's knowledge automatically
+3. **Usage Tracking**: Monitor costs and tokens
+4. **Rate Limit Handling**: Intelligent retry logic
+5. **Multi-Source**: Combines xAI + local knowledge + research papers
+6. **Offline Support**: Works without internet
+7. **Ethical Framework**: All responses filtered through Pandora's ethics
+
+### Use Cases
+
+1. **Enhanced Chatbot**: More powerful responses with xAI
+2. **Research Assistant**: Combine xAI with scientific papers
+3. **Code Generation**: Use Grok for complex code tasks
+4. **Knowledge Synthesis**: Merge multiple sources
+5. **Real-time Updates**: Latest information via xAI
+6. **Gemini Alternative**: Use xAI instead of Google Gemini
+
+### Comparison: xAI vs Local LLM
+
+| Feature | xAI (Grok) | Local LLM |
+|---------|------------|-----------|
+| Internet Required | Yes | No |
+| Response Quality | Very High | Good |
+| Speed | Fast (with good connection) | Very Fast |
+| Privacy | Cloud-based | 100% Local |
+| Cost | API usage fees | Free |
+| Availability | 99%+ uptime | 100% (local) |
+| Latest Knowledge | Yes (real-time) | Limited to training |
+
+**Pandora Philosophy**: Use both! xAI when available, local when not.
+
+### Example Demo Output
+
+```
+======================================================================
+Pandora AIOS - xAI (Grok) API Integration Demo
+======================================================================
+
+✅ xAI API configured
+Model: grok-beta
+
+======================================================================
+Query 1: Explain quantum computing in simple terms
+----------------------------------------------------------------------
+Quantum computing uses quantum mechanics principles like superposition
+and entanglement to process information. Unlike classical bits (0 or 1),
+qubits can be both simultaneously, enabling parallel computation...
+
+======================================================================
+API Usage Statistics
+======================================================================
+{
+  "total_requests": 3,
+  "total_tokens": 1247,
+  "total_cost": 0.0623,
+  "start_time": "2025-11-14T23:45:12.123456"
+}
+```
+
+---
+
 ## Conclusion
 
 Pandora AIOS represents a comprehensive attempt to create an AI system that embodies universal ethical principles while maintaining robust security and adaptive intelligence. The system architecture emphasizes safety, transparency, and graceful degradation, with multiple layers of protection and fallback mechanisms.
@@ -1110,6 +1351,8 @@ The security architecture employs innovative concepts like quantum-inspired rand
 
 All components work together as a unified "fabric" where each thread serves the whole, embodying the Stoic and Eastern philosophical principles of harmony, balance, and service without attachment to outcomes.
 
+**NEW**: The xAI API integration extends Pandora's capabilities by combining the power of cloud-based AI (xAI's Grok) with local knowledge and research databases, while maintaining the offline-first philosophy that ensures the system always works, even without internet connectivity.
+
 ---
 
-**This document contains complete information on all files in the Pandora AIOS project and can be used as a comprehensive prompt for Gemini or other AI systems to understand, modify, or extend the project.**
+**This document contains complete information on all files in the Pandora AIOS project, including the new xAI API integration, and can be used as a comprehensive prompt for Gemini, xAI Grok, or other AI systems to understand, modify, or extend the project.**
