@@ -13,7 +13,6 @@ Requires: Linux (with iptables/nftables & psutil), Python 3.8+
 Authors: Pandora AIOS Security Team
 """
 
-import os
 import random
 import subprocess
 import time
