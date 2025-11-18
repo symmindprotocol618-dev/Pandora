@@ -49,6 +49,34 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    """Handle chat messages with input validation"""
+    try:
+        if not request.json or "message" not in request.json:
+            return jsonify(error="Invalid request format"), 400
+        
+        user_message = request.json["message"]
+        
+        # Security: Limit message length
+        if len(user_message) > 1000:
+            return jsonify(error="Message too long (max 1000 chars)"), 400
+        
+        # Security: Basic sanitization (prevent script injection)
+        user_message = user_message.strip()
+        
+        # AIOS Pandora call goes here in actual system
+        ai_response = fake_ai_response(user_message)
+        chat_history.append((user_message, ai_response))
+        
+        # Limit chat history to prevent memory issues
+        if len(chat_history) > 100:
+            chat_history.pop(0)
+        
+        return jsonify(response=ai_response)
+    except Exception as e:
+        return jsonify(error=f"Server error: {str(e)}"), 500
+
+def fake_ai_response(msg):
+    """Demo stub; you would call your AI/Pandora backend here"""
     user_message = request.json["message"]
     # AIOS Pandora call goes here in actual system
     ai_response = fake_ai_response(user_message)
@@ -61,11 +89,32 @@ def fake_ai_response(msg):
         return "System healthy. AI Pandora up."
     elif "sync" in msg.lower():
         return "Assimilating settings from client device...done."
+    elif "help" in msg.lower():
+        return "Available commands: status, sync, info. Ask me anything!"
+    elif "info" in msg.lower():
+        return "Pandora AIOS v2.5 - AI Operating System with stoic philosophy."
     return "AIOS Pandora heard: " + msg
 
 @app.route("/static/<path:filename>")
 def static_files(filename):
     return send_from_directory("static", filename)
+
+@app.route("/health")
+def health():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'Pandora Assimilation Portal',
+        'version': '2.5.0',
+        'chat_history_size': len(chat_history)
+    })
+
+@app.route("/clear", methods=["POST"])
+def clear_history():
+    """Clear chat history (admin function)"""
+    global chat_history
+    chat_history = []
+    return jsonify(message="Chat history cleared")
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
