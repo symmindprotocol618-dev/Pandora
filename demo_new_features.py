@@ -8,7 +8,6 @@ This script demonstrates the new features added to Pandora AIOS:
 """
 
 import time
-import sys
 
 def demo_internet_consciousness():
     """Demonstrate Internet Consciousness Stream"""
