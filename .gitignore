@@ -23,6 +23,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Virtual Environment
 # Virtual environments
 venv/
 ENV/
@@ -46,6 +47,20 @@ ENV/
 *.swp
 *.swo
 *~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.out
+
+# System
+.cache/
+tmp/
+temp/
+
+# Pandora specific
+/var/log/pandora*
 
 # OS
 .DS_Store
