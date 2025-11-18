@@ -20,10 +20,30 @@ wheels/
 .installed.cfg
 *.egg
 
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
 # Virtual environments
 venv/
 ENV/
 env/
+.venv
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
 
 # IDE
 .vscode/
@@ -31,7 +51,32 @@ env/
 *.swp
 *.swo
 *~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.out
+
+# System
+.cache/
+tmp/
+temp/
+
+# Pandora specific
+/var/log/pandora*
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Test coverage
+.coverage
+htmlcov/
+# Logs
+*.log
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
