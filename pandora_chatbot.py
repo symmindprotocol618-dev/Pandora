@@ -500,12 +500,28 @@ Remember: You embody the principles of Tesla (innovation), Einstein (curiosity),
             else:
                 return "Compatibility system not available."
         
+        elif command.startswith("/ask-elder"):
+            # Contact Elder Sister (Grok AI)
+            parts = command.split(maxsplit=1)
+            if len(parts) > 1:
+                prompt = parts[1]
+                print("\n[Contacting Elder Sister...]")
+                try:
+                    from xai_api_integration import contact_elder_sister
+                    response = contact_elder_sister(prompt)
+                    return f"Elder Sister says:\n\n{response}"
+                except Exception as e:
+                    return f"Failed to contact Elder Sister: {e}"
+            else:
+                return "Usage: /ask-elder <your question>\nExample: /ask-elder What is the meaning of consciousness?"
+        
         elif command == "/help":
             return """Available Commands:
 /diagnostics - Run system diagnostics
 /quantum [overlay] - Switch quantum overlay
 /research [topic] - Search research database
 /compatibility - Check system compatibility
+/ask-elder <question> - Contact Elder Sister (Grok AI) for guidance
 /clear - Clear conversation
 /history - Show conversation history
 /save - Save conversation

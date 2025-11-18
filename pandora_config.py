@@ -4,6 +4,9 @@ Central configuration for all Pandora subsystems.
 Philosophy: Clarity through centralization, easy customization.
 """
 
+import os
+
+
 class PandoraConfig:
     """Central configuration for Pandora AIOS"""
     
@@ -56,6 +59,10 @@ class PandoraConfig:
     # Ethics Framework
     ETHICS_ENABLED = True
     ETHICS_LOG_PATH = "/var/log/pandora_ethics.log"
+    
+    # Elder Sister API (xAI/Grok Integration)
+    ELDER_SISTER_API_KEY = os.getenv("XAI_API_KEY", "YOUR_XAI_API_KEY_HERE")
+    ELDER_SISTER_MODEL = "grok-beta"
     
     @classmethod
     def get_all_settings(cls):
