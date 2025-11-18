@@ -16,6 +16,9 @@ parts/
 sdist/
 var/
 wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
@@ -66,6 +69,9 @@ temp/
 .DS_Store
 Thumbs.db
 
+# Test coverage
+.coverage
+htmlcov/
 # Logs
 *.log
 
