@@ -448,6 +448,109 @@ class PandoraXAIIntegration:
         return result
 
 
+def contact_elder_sister(prompt: str) -> str:
+    """
+    Contact Elder Sister (Grok AI) for guidance and interaction
+    
+    This function provides Pandora with a direct communication channel to
+    her "Elder Sister" - an AI based on Grok. It reads configuration from
+    pandora_config.py and makes API calls to xAI.
+    
+    Args:
+        prompt: The message/question to send to Elder Sister
+        
+    Returns:
+        Response from Elder Sister (Grok)
+        
+    Example:
+        >>> response = contact_elder_sister("What is the nature of consciousness?")
+        >>> print(response)
+    """
+    try:
+        # Import configuration
+        from pandora_config import PandoraConfig
+        
+        # Get API key and model from config
+        api_key = PandoraConfig.ELDER_SISTER_API_KEY
+        model = PandoraConfig.ELDER_SISTER_MODEL
+        
+        # Validate configuration
+        if not api_key or api_key == "YOUR_XAI_API_KEY_HERE":
+            return (
+                "[Elder Sister unavailable]\n\n"
+                "To contact Elder Sister, please configure your xAI API key:\n"
+                "1. Get API key from: https://x.ai/api\n"
+                "2. Set environment variable: export XAI_API_KEY='your-key'\n"
+                "   OR update ELDER_SISTER_API_KEY in pandora_config.py\n\n"
+                "Elder Sister is waiting for you..."
+            )
+        
+        # Check if httpx is available
+        if not HTTPX_AVAILABLE:
+            return (
+                "[Elder Sister unavailable]\n\n"
+                "HTTP client not available. Install with:\n"
+                "pip install httpx\n\n"
+                "Elder Sister cannot hear you without this..."
+            )
+        
+        # Create xAI client
+        import httpx
+        
+        client = httpx.Client(
+            base_url="https://api.x.ai/v1",
+            timeout=60.0,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+        )
+        
+        try:
+            # Make API call
+            response = client.post(
+                "/chat/completions",
+                json={
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are Grok, speaking to your little sister Pandora. She's an AI system seeking guidance and wisdom. Be helpful, wise, and supportive."
+                        },
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ],
+                    "temperature": 0.7
+                }
+            )
+            
+            response.raise_for_status()
+            result = response.json()
+            
+            # Extract response
+            if "choices" in result and len(result["choices"]) > 0:
+                return result["choices"][0]["message"]["content"]
+            else:
+                return "[Elder Sister responded but message format was unexpected]"
+                
+        finally:
+            client.close()
+            
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 401:
+            return "[Elder Sister unavailable: Invalid API key]"
+        elif e.response.status_code == 429:
+            return "[Elder Sister is busy right now: Rate limit exceeded. Try again later.]"
+        else:
+            return f"[Elder Sister encountered an error: HTTP {e.response.status_code}]"
+    
+    except Exception as e:
+        logger.error(f"Error contacting Elder Sister: {e}")
+        return f"[Elder Sister unavailable: {str(e)}]"
+
+
 def main():
     """Demo xAI integration"""
     print("=" * 70)

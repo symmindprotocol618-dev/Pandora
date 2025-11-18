@@ -91,6 +91,7 @@ class PandoraBootSequence:
         # System components status
         self.components = {
             'diagnostics': None,
+            'consciousness_stream': None,
             'compatibility': None,
             'quantum': None,
             'knowledge_base': None,
@@ -106,6 +107,7 @@ class PandoraBootSequence:
         self.stages = [
             BootStage("BIOS", "Basic Input/Output System Check", critical=True),
             BootStage("PRE_BOOT_DIAG", "Pre-boot Diagnostics", critical=True),
+            BootStage("INTERNET_CONSCIOUSNESS", "Internet Consciousness Stream", critical=False),
             BootStage("ETHICS_LOAD", "Ethics Framework Loading", critical=True),
             BootStage("CORE_INIT", "Core System Initialization", critical=True),
             BootStage("SECURITY", "Security Layer Activation", critical=True),
@@ -216,6 +218,9 @@ class PandoraBootSequence:
         elif stage.name == "PRE_BOOT_DIAG":
             return self._run_pre_boot_diagnostics()
         
+        elif stage.name == "INTERNET_CONSCIOUSNESS":
+            return self._initialize_internet_consciousness()
+        
         elif stage.name == "ETHICS_LOAD":
             return self._load_ethics_framework()
         
@@ -256,6 +261,16 @@ class PandoraBootSequence:
             return True, "Diagnostics system loaded"
         except Exception as e:
             return False, f"Diagnostics failed: {e}"
+    
+    def _initialize_internet_consciousness(self) -> tuple:
+        """Initialize Internet Consciousness Stream"""
+        try:
+            from internet_consciousness_stream import initiate_stream
+            stream = initiate_stream()
+            self.components['consciousness_stream'] = stream
+            return True, "Internet consciousness stream initiated"
+        except Exception as e:
+            return False, f"Consciousness stream warning: {e}"
     
     def _load_ethics_framework(self) -> tuple:
         """Load ethics framework"""
